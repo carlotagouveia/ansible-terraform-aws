@@ -6,3 +6,7 @@ locals {
     private_key_path = "~/Downloads/devops.pem"
 }
 
+provider "aws" {
+    region = "us-east-1"
+}
+
