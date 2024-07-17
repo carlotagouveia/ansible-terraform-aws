@@ -1,7 +1,7 @@
 locals {
-    vpc_id = "vpc-0dc7ff5bd56061e73"
-    subnet_id = "subnet-06d1297753a647bf4"
-    ssh_uder = "ubuntu"
+    vpc_id = "vpc-052f50486de034fa2"
+    subnet_id = "subnet-09f66e8dc945fb5ff"
+    ssh_user = "ubuntu"
     key_name = "devops"
     private_key_path = "~/Downloads/devops.pem"
 }
@@ -29,9 +29,36 @@ resource "aws_security_group" "nginx" {
   }
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
-    cidr_blocks = ["0.0.0.0/0"]
+    from_port = 0   # all ports
+    to_port = 0    # all ports
+    protocol = "-1"  # all protocols
+    cidr_blocks = ["0.0.0.0/0"]    # all cidr addresses
   }
+}
+
+resource "aws_instance" "nginx" {
+  ami                         = "ami-0dba2cb6798deb6d8"
+  subnet_id                   = local.subnet_id
+  instance_type               = "t2.micro"
+  associate_public_ip_address = true
+  security_groups             = [aws_security_group.nginx.id]
+  key_name                    = local.key_name  #key pair
+
+  provisioner "remote-exec" {
+    inline = ["echo 'Wait until SSH is ready'"]
+
+    connection {
+      type        = "ssh"
+      user        = local.ssh_user
+      private_key = file(local.private_key_path)
+      host        = aws_instance.nginx.public_ip
+    }
+  }
+  provisioner "local-exec" {
+    command = "ansible-playbook  -i ${aws_instance.nginx.public_ip}, --private-key ${local.private_key_path} nginx.yaml"
+  }
+}
+
+output "nginx_ip" {
+  value = aws_instance.nginx.public_ip
 }
