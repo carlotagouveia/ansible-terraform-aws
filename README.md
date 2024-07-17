@@ -1,2 +1,2 @@
 # ansible-terraform-aws
-terraform and ansible test using aws ec2
+testing terraform and ansible using aws ec2
