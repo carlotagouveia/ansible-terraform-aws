@@ -1,11 +1,11 @@
 # ansible-terraform-aws
-terraform and ansible integration using aws ec2
+Terraform and Ansible integration using AWS EC2
 
 ### OS 
 
 Ubuntu 24.04
 
-### Packages
+### Requirements
 
 * terraform v1.9.2-dev
 
